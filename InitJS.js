@@ -10,8 +10,16 @@ console.log();
 createHTMLFile("index.html");
 createFile("index.js");
 createFile("style.css");
-createFile("readme.md");
+createFile("README.md");
 
+try {
+    const gitignoreFile = path.join(__dirname, "template.gitignore")
+    const gitignoreNewFile = path.join(process.cwd(), ".gitignore")
+    fs.copyFileSync(gitignoreFile, gitignoreNewFile)
+    console.log(clc.yellow("New File: ") + gitignoreNewFile);
+} catch (error) {
+    console.error(clc.red(error.message));
+}
 console.log("END");
 
 function createHTMLFile(newFile) {
