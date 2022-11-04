@@ -3,31 +3,26 @@ const path = require("path");
 const prompt = require("prompt-sync")();
 const clc = require("cli-color");
 
-// console.log("__dirname = " + __dirname);
 console.log("==============================");
-console.log(clc.cyanBright('Initializing a new JS project'));
+console.log(clc.cyanBright('Initializing a new React Component'));
 console.log();
 console.log(clc.yellow("CURRENT DIR: ") + process.cwd());
 console.log();
 
-createHTMLFile("index.html");
-createFile("index.js");
-createFile("style.css");
-createFile("README.md");
-
-try {
-    const gitignoreFile = path.join(__dirname, "template.gitignore")
-    const gitignoreNewFile = path.join(process.cwd(), ".gitignore")
-    fs.copyFileSync(gitignoreFile, gitignoreNewFile)
-    console.log(clc.yellow("New File: ") + gitignoreNewFile);
-} catch (error) {
-    console.error(clc.red(error.message));
+let newCompName = prompt(
+    "New React Component Name " + clc.red("(CTRL+C to abort)") + " > "
+);
+if (!newCompName) {
+    console.log('Use default name DEF');
+    newCompName = 'DEF'
 }
-console.log("END");
 
-function createHTMLFile(newFile) {
+createJSReactCompFile( newCompName + '.js')
+createFile( newCompName + '.css');
+
+function createJSReactCompFile(newFile) {
     const filePath = path.join(process.cwd(), newFile);
-    const fileTemplatePath = path.join(__dirname, "htmlTemplate.html");
+    const fileTemplatePath = path.join(__dirname, "jsReactCompTemplate.js");
     console.log(clc.yellow("New File: ") + filePath);
     console.log(clc.yellow("Template File: ") + fileTemplatePath);
     try {
@@ -35,25 +30,25 @@ function createHTMLFile(newFile) {
         console.log(clc.green(`File ${newFile} CREATED = ${file}`));
         let fileTemplate = fs.openSync(fileTemplatePath, "r");
         console.log(
-            clc.green(`File htmlTemplate.html CREATED = ${fileTemplate}`)
+            clc.green(`File htmlTemplate.html opened = ${fileTemplate}`)
         );
 
-        let newHTML = fs.readFileSync(fileTemplate, { encoding: "utf8" });
-        let newTitle = prompt(
-            "HTML Title? " + clc.red("(CTRL+C to abort)") + " > "
-        );
-        if (newTitle) {
-            // newHTML = newHTML.replace("x-Document-x", newTitle);
+        let newComp = fs.readFileSync(fileTemplate, { encoding: "utf8" });
+        // let newCompName = prompt(
+        //     "New Comp Name? " + clc.red("(CTRL+C to abort)") + " > "
+        // );
+        if (newCompName) {
+            // newHTML = newHTML.replace("x-Document-x", newCompName);
         } else {
             const dirName = path.basename(process.cwd());
             console.log(clc.yellow("Use default title ")+dirName);
-            newTitle = dirName;
+            newCompName = dirName;
         }
-        newHTML = newHTML.replace("x-Document-x", newTitle);
+        newComp = newComp.replaceAll("%%%", newCompName);
 
         console.log();
-        console.log(clc.magenta(newHTML));
-        fs.writeFileSync(file, newHTML);
+        console.log(clc.magentaBright(newComp));
+        fs.writeFileSync(file, newComp);
 
         fs.closeSync(file);
         fs.closeSync(fileTemplate);
@@ -75,9 +70,3 @@ function createFile(newFile) {
     }
     console.log();
 }
-
-require("readline")
-    .createInterface(process.stdin, process.stdout)
-    .question("Press any key to exit...", function () {
-        process.exit();
-    });
